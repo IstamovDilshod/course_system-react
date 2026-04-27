@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: "https://course-system-6zug.onrender.com/mycourse", // Backend URL'ini to'g'ri ko'rsating
+    baseURL: "https://course-system-6zug.onrender.com/mycourse/", // Backend URL'ini to'g'ri ko'rsating
     withCredentials: true, // Cookie va tokenlar uchun muhim
 });
 
