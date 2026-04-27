@@ -1,11 +1,9 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: "https://course-system-6zug.onrender.com/mycourse/", // Backend URL'ini to'g'ri ko'rsating
-    withCredentials: true, // Cookie va tokenlar uchun muhim
+    baseURL: "https://course-system-6zug.onrender.com/mycourse/",
 });
 
-// Request: Har so'rovga token qo'shish
 api.interceptors.request.use((config) => {
     const token = localStorage.getItem('access');
     if (token) {
@@ -14,7 +12,6 @@ api.interceptors.request.use((config) => {
     return config;
 });
 
-// Response: 401 da token yangilash
 api.interceptors.response.use(
     (response) => response,
     async (error) => {
@@ -24,30 +21,23 @@ api.interceptors.response.use(
             originalRequest._retry = true;
 
             const refreshToken = localStorage.getItem('refresh');
-            if (!refreshToken) {
-                window.location.href = '/login';
-                return Promise.reject(error);
-            }
 
             try {
-                // DIQQAT: Bu yerda localhost emas, Render URL'ni ishlating
                 const res = await axios.post(
-                    'https://course-system-6zug.onrender.com/mycourse/token/refresh/', // Backenddagi to'g'ri URL
+                    'https://course-system-6zug.onrender.com/mycourse/login/refresh/',
                     { refresh: refreshToken }
                 );
 
-                const newAccessToken = res.data.access;
-                localStorage.setItem('access', newAccessToken);
+                localStorage.setItem('access', res.data.access);
 
-                originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+                originalRequest.headers.Authorization = `Bearer ${res.data.access}`;
                 return api(originalRequest);
-            } catch (refreshError) {
-                localStorage.removeItem('access');
-                localStorage.removeItem('refresh');
+            } catch (e) {
+                localStorage.clear();
                 window.location.href = '/login';
-                return Promise.reject(refreshError);
             }
         }
+
         return Promise.reject(error);
     }
 );
