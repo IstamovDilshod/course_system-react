@@ -1,0 +1,299 @@
+/* ===========================
+   REGISTER — ULTRA PREMIUM UI
+   =========================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --bg1: #1e293b;
+  --bg2: #0f172a;
+  --glass: rgba(255,255,255,0.06);
+  --border: rgba(255,255,255,0.08);
+  --accent: #38bdf8;
+  --accent-glow: rgba(56,189,248,0.3);
+  --white: #ffffff;
+  --text-dark: #0f172a;
+  --muted: #94a3b8;
+  --radius: 16px;
+}
+
+/* RESET */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* BACKGROUND */
+.reg-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Inter', sans-serif;
+  background: radial-gradient(circle at 20% 20%, #334155, #020617);
+}
+
+/* CONTAINER (GLASS) */
+.reg-container {
+  width: 100%;
+  max-width: 1000px;
+  height: 620px;
+  display: flex;
+  border-radius: 26px;
+  overflow: hidden;
+  background: var(--glass);
+  backdrop-filter: blur(25px);
+  border: 1px solid var(--border);
+  box-shadow: 0 40px 100px rgba(0,0,0,0.7);
+  animation: fadeIn 0.6s ease;
+}
+
+@keyframes fadeIn {
+  from {opacity: 0; transform: translateY(25px) scale(0.96);}
+  to {opacity: 1; transform: translateY(0) scale(1);}
+}
+
+/* ================= LEFT ================= */
+.reg-left {
+  flex: 1;
+  position: relative;
+  background: url("https://images.unsplash.com/photo-1535223289827-42f1e9919769?q=80&w=800") center/cover no-repeat;
+  display: flex;
+  align-items: flex-end;
+  padding: 40px;
+}
+
+.reg-left::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.85), transparent);
+}
+
+.reg-left-content {
+  position: relative;
+  z-index: 2;
+  color: white;
+}
+
+.reg-left-title {
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.reg-left-sub {
+  margin-top: 10px;
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+.reg-left-btn {
+  margin-top: 18px;
+  display: inline-block;
+  padding: 10px 24px;
+  border-radius: 30px;
+  background: rgba(255,255,255,0.15);
+  color: white;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+.reg-left-btn:hover {
+  background: white;
+  color: black;
+}
+
+/* ================= RIGHT ================= */
+.reg-right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+}
+
+/* FORM */
+.reg-form-box {
+  width: 100%;
+  max-width: 440px;
+}
+
+.reg-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.reg-title {
+  font-size: 28px;
+  font-weight: 600;
+  color: white;
+}
+
+.reg-subtitle {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+/* FORM */
+.reg-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* FIELD */
+.reg-field label {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+/* INPUT */
+.reg-field input,
+.reg-field select {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: var(--radius);
+  border: 1px solid rgba(255,255,255,0.15);
+  background: white;
+  color: var(--text-dark);
+  font-size: 15px;
+  outline: none;
+  transition: 0.25s;
+}
+
+.reg-field input:focus,
+.reg-field select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+/* PASSWORD */
+.reg-password-wrap {
+  position: relative;
+}
+
+.reg-password-wrap input {
+  padding-right: 50px;
+}
+
+/* 👁 ICON PERFECT */
+.reg-password-toggle {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  margin-top: -18px;
+  width: 36px;
+  height: 36px;
+  background: #f1f5f9;
+  border-radius: 10px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #64748b;
+  transition: 0.2s;
+}
+
+.reg-password-toggle:hover {
+  background: #e2e8f0;
+  color: var(--accent);
+}
+
+/* ERROR */
+.reg-error {
+  background: rgba(255,0,0,0.1);
+  color: #f87171;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+/* BUTTON */
+.reg-submit-btn {
+  padding: 14px;
+  border-radius: 30px;
+  border: none;
+  background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.reg-submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 40px rgba(56,189,248,0.5);
+}
+
+/* FOOTER */
+.reg-footer-text {
+  text-align: center;
+  color: var(--muted);
+}
+
+.reg-footer-text a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+  .reg-container {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .reg-left {
+    height: 200px;
+  }
+
+  .reg-right {
+    padding: 30px;
+  }
+}
+/* ===== Premium Error Alert ===== */
+.reg-error {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 500;
+
+  background: linear-gradient(135deg, rgba(255, 80, 80, 0.12), rgba(255, 0, 0, 0.05));
+  border: 1px solid rgba(255, 80, 80, 0.3);
+  color: #ff6b6b;
+
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 25px rgba(255, 80, 80, 0.15);
+
+  animation: slideFade 0.4s ease;
+}
+
+/* Icon */
+.reg-error-icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(255, 80, 80, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+/* Animation */
+@keyframes slideFade {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}

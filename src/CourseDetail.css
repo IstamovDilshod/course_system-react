@@ -1,0 +1,646 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body { background: #0b0f1a; font-family: 'Sora', sans-serif; }
+
+/* ═══════════════════════════════════════════════════════════
+   COURSE DETAIL — Layout
+═══════════════════════════════════════════════════════════ */
+
+.cd-wrapper {
+    min-height: 100vh;
+    background: #0b0f1a;
+    background-image: radial-gradient(ellipse 70% 40% at 50% -5%, rgba(99,102,241,0.15) 0%, transparent 65%);
+    padding: 2.5rem 1.5rem;
+}
+
+.cd-container {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+/* ── Loading ── */
+.cd-loading-screen {
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cd-spinner-lg {
+    width: 36px;
+    height: 36px;
+    border: 3px solid rgba(99,102,241,0.2);
+    border-top-color: #6366f1;
+    border-radius: 50%;
+    animation: cd-spin 0.8s linear infinite;
+}
+
+@keyframes cd-spin { to { transform: rotate(360deg); } }
+
+/* ── Back button ── */
+.cd-back {
+    background: transparent;
+    border: none;
+    color: #475569;
+    font-family: 'Sora', sans-serif;
+    font-size: 0.85rem;
+    cursor: pointer;
+    padding: 0;
+    margin-bottom: 1.25rem;
+    transition: color 0.18s;
+}
+.cd-back:hover { color: #818cf8; }
+
+/* ═══════════════════════════════════════════════════════════
+   HERO
+═══════════════════════════════════════════════════════════ */
+
+.cd-hero {
+    background: #141824;
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 22px;
+    padding: 2rem;
+    animation: cd-fade 0.45s ease both;
+}
+
+.cd-hero-body {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+}
+
+.cd-hero-left { flex: 1; }
+
+.cd-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #6366f1;
+    background: rgba(99,102,241,0.1);
+    border: 1px solid rgba(99,102,241,0.2);
+    border-radius: 6px;
+    padding: 0.22rem 0.6rem;
+    display: inline-block;
+    margin-bottom: 0.85rem;
+}
+
+.cd-title {
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: #f1f5f9;
+    letter-spacing: -0.02em;
+    line-height: 1.3;
+    margin-bottom: 0.75rem;
+}
+
+.cd-desc {
+    font-size: 0.9rem;
+    color: #4b5563;
+    line-height: 1.65;
+    margin-bottom: 1.25rem;
+}
+
+.cd-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.cd-meta-item {
+    font-size: 0.82rem;
+    color: #334155;
+    font-weight: 500;
+}
+
+/* ── Price card ── */
+.cd-hero-right { flex-shrink: 0; width: 220px; }
+
+.cd-price-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 1.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+
+.cd-price-label {
+    font-size: 0.75rem;
+    color: #334155;
+    font-family: 'JetBrains Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.cd-price {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #10b981;
+    letter-spacing: -0.02em;
+}
+
+.cd-enroll-btn {
+    width: 100%;
+    padding: 0.75rem;
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    color: #fff;
+    border: none;
+    border-radius: 11px;
+    font-family: 'Sora', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    box-shadow: 0 4px 16px rgba(99,102,241,0.35);
+}
+.cd-enroll-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #818cf8, #6366f1);
+    transform: translateY(-1px);
+}
+.cd-enroll-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.cd-enrolled-badge {
+    text-align: center;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #10b981;
+    background: rgba(16,185,129,0.08);
+    border: 1px solid rgba(16,185,129,0.2);
+    border-radius: 10px;
+    padding: 0.6rem;
+}
+
+.cd-add-lesson-btn {
+    width: 100%;
+    padding: 0.65rem;
+    background: rgba(99,102,241,0.1);
+    color: #818cf8;
+    border: 1px solid rgba(99,102,241,0.2);
+    border-radius: 11px;
+    font-family: 'Sora', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.18s;
+}
+.cd-add-lesson-btn:hover { background: rgba(99,102,241,0.18); }
+
+/* ═══════════════════════════════════════════════════════════
+   PANEL
+═══════════════════════════════════════════════════════════ */
+
+.cd-panel {
+    background: #141824;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 20px;
+    padding: 1.75rem;
+    animation: cd-fade 0.4s ease both;
+}
+
+.cd-panel-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #e2e8f0;
+    margin-bottom: 1.25rem;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TABS
+═══════════════════════════════════════════════════════════ */
+
+.cd-tabs {
+    display: flex;
+    gap: 0.5rem;
+    background: #141824;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 14px;
+    padding: 0.4rem;
+}
+
+.cd-tab {
+    flex: 1;
+    padding: 0.65rem;
+    background: transparent;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Sora', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.18s ease;
+}
+.cd-tab:hover { color: #94a3b8; }
+.cd-tab--active {
+    background: rgba(99,102,241,0.12);
+    color: #818cf8;
+    font-weight: 600;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LESSON LIST
+═══════════════════════════════════════════════════════════ */
+
+.cd-lesson-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.cd-lesson-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.1rem;
+    background: rgba(188, 182, 182, 0.02);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 12px;
+    gap: 1rem;
+    transition: border-color 0.18s, background 0.18s;
+}
+.cd-lesson-item:hover { border-color: rgba(99,102,241,0.18); }
+
+.cd-lesson-item--clickable { cursor: pointer; }
+.cd-lesson-item--clickable:hover {
+    background: rgba(99,102,241,0.05);
+    border-color: rgba(99,102,241,0.22);
+}
+
+.cd-lesson-left {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.9rem;
+    flex: 1;
+    min-width: 0;
+}
+
+.cd-lesson-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: #4f46e5;
+    flex-shrink: 0;
+    margin-top: 0.15rem;
+}
+
+.cd-lesson-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #cbd5e1;
+    margin-bottom: 0.25rem;
+}
+
+.cd-lesson-content {
+    font-size: 0.8rem;
+    color: #334155;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 500px;
+}
+
+/* Play icon — visible on hover */
+.cd-play-icon {
+    font-size: 12px;
+    color: #6366f1;
+    opacity: 0;
+    transition: opacity 0.2s;
+    flex-shrink: 0;
+    padding: 0 4px;
+    pointer-events: none;
+    user-select: none;
+    background-color: #6366f1;
+}
+.cd-lesson-item--clickable:hover .cd-play-icon { opacity: 1; }
+
+/* Owner preview button */
+.cd-play-icon--btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    border: 1px solid rgba(99,102,241,0.25);
+    background: rgba(99,102,241,0.08);
+    color: #6366f1;
+    font-size: 11px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    opacity: 0;
+    flex-shrink: 0;
+}
+.cd-lesson-item--clickable:hover .cd-play-icon--btn { opacity: 1; }
+.cd-play-icon--btn:hover {
+    background: rgba(99,102,241,0.2);
+    border-color: #6366f1;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LESSON FORM (add new)
+═══════════════════════════════════════════════════════════ */
+
+.cd-lesson-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.cd-form-row {
+    display: grid;
+    grid-template-columns: 1fr 100px;
+    gap: 1rem;
+}
+
+.cd-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.cd-field label {
+    font-size: 0.7rem;
+    font-family: 'JetBrains Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #475569;
+}
+
+.cd-field input,
+.cd-field textarea {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    padding: 0.6rem 0.85rem;
+    color: #6366f1;
+    font-family: 'Sora', sans-serif;
+    font-size: 0.88rem;
+    outline: none;
+    transition: border-color 0.18s;
+    caret-color: #6366f1;
+    resize: none;
+}
+.cd-field input:focus,
+.cd-field textarea:focus { border-color: rgba(99,102,241,0.4); }
+.cd-field input::placeholder,
+.cd-field textarea::placeholder { color: #1e293b; font-size: 0.82rem; }
+
+.cd-form-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   BUTTONS
+═══════════════════════════════════════════════════════════ */
+
+.cd-btn {
+    padding: 0.6rem 1.25rem;
+    border-radius: 10px;
+    font-family: 'Sora', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.18s;
+}
+
+.cd-btn--primary {
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    color: #fff;
+    box-shadow: 0 3px 12px rgba(99,102,241,0.3);
+}
+.cd-btn--primary:hover:not(:disabled) {
+    background: linear-gradient(135deg, #818cf8, #6366f1);
+}
+.cd-btn--primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.cd-btn--ghost {
+    background: rgba(255,255,255,0.04);
+    color: #64748b;
+    border: 1px solid rgba(255,255,255,0.07);
+}
+.cd-btn--ghost:hover { color: #94a3b8; }
+
+/* Row action buttons */
+.cd-edit-btn {
+    background: transparent;
+    border: none;
+    padding: 6px 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    opacity: 0.5;
+    transition: opacity 0.18s, background 0.18s;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+}
+.cd-edit-btn:hover {
+    opacity: 1;
+    background: rgba(109,111,231,0.1);
+}
+
+.cd-del-btn {
+    background: transparent;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    opacity: 0.4;
+    transition: opacity 0.18s;
+    flex-shrink: 0;
+    padding: 0.25rem;
+    display: flex;
+    align-items: center;
+}
+.cd-del-btn:hover { opacity: 1; }
+
+/* ═══════════════════════════════════════════════════════════
+   REVIEWS
+═══════════════════════════════════════════════════════════ */
+
+.cd-review-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    padding-bottom: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    background-color: #0b0f1a;
+    color: white;
+}
+
+.cd-review-form-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #6366f1;
+}
+
+.cd-review-form textarea {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    padding: 0.65rem 0.9rem;
+    color: #e2e8f0;
+    font-family: 'Sora', sans-serif;
+    font-size: 0.88rem;
+    outline: none;
+    resize: none;
+    transition: border-color 0.18s;
+    caret-color: #6366f1;
+}
+.cd-review-form textarea:focus { border-color: rgba(99,102,241,0.4); }
+.cd-review-form textarea::placeholder { color: #1e293b; }
+
+/* Stars */
+.cd-stars { display: flex; gap: 0.2rem; }
+
+.cd-star {
+    background: transparent;
+    border: none;
+    font-size: 1.4rem;
+    color: #1e293b;
+    cursor: pointer;
+    transition: color 0.15s, transform 0.15s;
+    padding: 0;
+    line-height: 1;
+}
+.cd-star--on { color: #f59e0b; }
+.cd-star:hover { transform: scale(1.15); }
+
+/* Review list */
+.cd-review-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.cd-review-item {
+    padding: 1rem 1.1rem;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 12px;
+}
+
+.cd-review-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.6rem;
+}
+
+.cd-review-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.cd-review-name {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #cbd5e1;
+    margin-bottom: 0.2rem;
+}
+
+.cd-review-comment {
+    font-size: 0.85rem;
+    color: #4b5563;
+    line-height: 1.6;
+    margin-left: calc(34px + 0.75rem);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   EMPTY STATE
+═══════════════════════════════════════════════════════════ */
+
+.cd-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 3rem 1rem;
+    text-align: center;
+}
+.cd-empty span { font-size: 2rem; }
+.cd-empty p { font-size: 0.88rem; color: #334155; }
+
+/* ═══════════════════════════════════════════════════════════
+   ANIMATIONS
+═══════════════════════════════════════════════════════════ */
+
+@keyframes cd-fade {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RESPONSIVE — Course Detail
+═══════════════════════════════════════════════════════════ */
+
+@media (max-width: 640px) {
+    .cd-hero-body { flex-direction: column; }
+    .cd-hero-right { width: 100%; }
+    .cd-form-row { grid-template-columns: 1fr; }
+    .cd-wrapper { padding: 1.5rem 1rem; }
+    .cd-title { font-size: 1.3rem; }
+}
+
+
+/* ═══════════════════════════════════════════════════════════
+   LESSON VIEWER MODAL
+═══════════════════════════════════════════════════════════ */
+
+.lv-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(5, 6, 10, 0.92);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: lv-fade .25s ease both;
+}
+
+@keyframes lv-fade {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+.lv-modal {
+    background: #111318;
+    border: 1px solid #1e2130;
+    border-radius: 22px;
+    width: 100%;
+    max-width: 820px;
+    max-height: 90vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow:
+        0 40px 100px rgba(0,0,0,.7),
+        0 0 0 1px #1a1d28;
+    animation: lv-up .35s cubic-bezier(.22,1,.36,1) both;
+}
+
+@keyframes lv-up {
+    from { opacity: 0; transform: translateY(24px) scale(.97); }
+    to   { opacity: 1; transform: none ; }
+}

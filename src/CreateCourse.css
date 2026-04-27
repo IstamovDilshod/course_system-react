@@ -1,0 +1,366 @@
+/* ===========================
+   CreateCourse.css — Dark Aqua
+   =========================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --bg:           #0d0d0d;
+  --panel-bg:     #111111;
+  --input-bg:     #1a1a1a;
+  --input-border: #2a2a2a;
+  --accent:       #00c2ff;
+  --accent-glow:  rgba(0, 194, 255, 0.22);
+  --white:        #ffffff;
+  --text-primary: #f0f0f0;
+  --text-muted:   #6b6b7b;
+  --text-label:   #9999aa;
+  --error-color:  #ff7070;
+  --error-bg:     rgba(255, 80, 80, 0.08);
+  --error-border: rgba(255, 80, 80, 0.2);
+  --border-r:     14px;
+  --transition:   0.2s ease;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ---------- Wrapper ---------- */
+.cc-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  font-family: 'Inter', sans-serif;
+  padding: 24px;
+}
+
+/* ---------- Card ---------- */
+.cc-card {
+  width: 100%;
+  max-width: 520px;
+  background: var(--panel-bg);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 24px;
+  padding: 44px 44px 40px;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.04),
+    0 24px 70px rgba(0,0,0,0.65);
+  animation: card-in 0.48s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes card-in {
+  from { opacity: 0; transform: translateY(22px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);    }
+}
+
+/* ---------- Header ---------- */
+.cc-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 36px;
+  text-align: center;
+}
+
+.cc-icon {
+  width: 52px;
+  height: 52px;
+  background: rgba(0, 194, 255, 0.1);
+  border: 1px solid rgba(0, 194, 255, 0.2);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+
+.cc-icon svg {
+  width: 24px;
+  height: 24px;
+  color: var(--accent);
+  stroke: var(--accent);
+}
+
+.cc-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.4px;
+}
+
+.cc-subtitle {
+  font-size: 0.83rem;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+/* ---------- Form ---------- */
+.cc-form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* ---------- Field (floating label) ---------- */
+.cc-field {
+  position: relative;
+  padding-top: 18px;
+  margin-bottom: 10px;
+}
+
+/* Floating label */
+.cc-label {
+  position: absolute;
+  top: 30px;
+  left: 14px;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  pointer-events: none;
+  transition: top 0.18s ease, font-size 0.18s ease, color 0.18s ease;
+  transform-origin: left top;
+}
+
+/* When focused or filled — label floats up */
+.cc-field--focused .cc-label,
+.cc-field--filled .cc-label {
+  top: 0;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-label);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.cc-field--focused .cc-label {
+  color: var(--accent);
+}
+
+/* ---------- Input / Textarea ---------- */
+.cc-input {
+  width: 100%;
+  padding: 12px 14px;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: var(--border-r);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  outline: none;
+  transition:
+    border-color var(--transition),
+    box-shadow var(--transition),
+    background var(--transition);
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.cc-input::placeholder {
+  color: transparent;
+}
+
+.cc-input:focus {
+  border-color: var(--accent);
+  background: #1a1a22;
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+/* Textarea */
+.cc-textarea {
+  resize: vertical;
+  min-height: 110px;
+  line-height: 1.55;
+}
+
+/* Animated bottom line (decorative) */
+.cc-line {
+  display: block;
+  position: absolute;
+  bottom: 0;
+  left: 14px;
+  height: 2px;
+  width: 0;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: width 0.25s ease;
+  pointer-events: none;
+}
+
+.cc-field--focused .cc-line {
+  width: calc(100% - 28px);
+  box-shadow: 0 0 8px var(--accent-glow);
+}
+
+/* ---------- Price wrap ---------- */
+.cc-price-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.cc-currency {
+  position: absolute;
+  left: 14px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  pointer-events: none;
+  z-index: 1;
+  transition: color var(--transition);
+}
+
+.cc-field--focused .cc-currency {
+  color: var(--accent);
+}
+
+.cc-input--price {
+  padding-left: 28px;
+}
+
+/* Hide number input arrows */
+.cc-input--price::-webkit-inner-spin-button,
+.cc-input--price::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.cc-input--price { -moz-appearance: textfield; }
+
+/* ---------- Error (alert) ---------- */
+.cc-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--error-bg);
+  border: 1px solid var(--error-border);
+  border-radius: 10px;
+  color: var(--error-color);
+  font-size: 0.82rem;
+  font-weight: 500;
+  margin-top: 4px;
+  animation: shake 0.35s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+
+.cc-error svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%       { transform: translateX(-5px); }
+  40%       { transform: translateX(5px); }
+  60%       { transform: translateX(-4px); }
+  80%       { transform: translateX(3px); }
+}
+
+/* ---------- Actions ---------- */
+.cc-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+/* ---------- Buttons ---------- */
+.cc-btn {
+  flex: 1;
+  padding: 12px 20px;
+  border-radius: 50px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  transition:
+    background var(--transition),
+    box-shadow var(--transition),
+    transform var(--transition),
+    opacity var(--transition);
+}
+
+.cc-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Secondary */
+.cc-btn--secondary {
+  background: rgba(255,255,255,0.06);
+  color: var(--text-muted);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.cc-btn--secondary:hover:not(:disabled) {
+  background: rgba(255,255,255,0.1);
+  color: var(--text-primary);
+  transform: translateY(-1px);
+}
+
+/* Primary */
+.cc-btn--primary {
+  background: var(--accent);
+  color: #000;
+  font-weight: 700;
+  box-shadow: 0 4px 20px var(--accent-glow);
+}
+
+.cc-btn--primary:hover:not(:disabled) {
+  background: #33cfff;
+  box-shadow: 0 6px 28px rgba(0, 194, 255, 0.42);
+  transform: translateY(-2px);
+}
+
+.cc-btn--primary:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 10px var(--accent-glow);
+}
+
+.cc-btn--loading {
+  pointer-events: none;
+}
+
+/* Button icon */
+.cc-btn-icon {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+  flex-shrink: 0;
+}
+
+/* Spinner */
+.cc-spinner {
+  width: 15px;
+  height: 15px;
+  border: 2px solid rgba(0,0,0,0.2);
+  border-top-color: #000;
+  border-radius: 50%;
+  animation: spin 0.65s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 560px) {
+  .cc-card {
+    padding: 32px 22px 28px;
+    border-radius: 20px;
+  }
+
+  .cc-actions {
+    flex-direction: column-reverse;
+  }
+}
