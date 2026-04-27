@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'http://localhost:8000/mycourse/',
+    // baseURL: 'http://localhost:8000/mycourse/',
+    baseURL: "https://course-system-6zug.onrender.com",
 });
 
 // ── Request: har so'rovga token qo'shish ─────────────────────────────────────
