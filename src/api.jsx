@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: "https://course-system-6zug.onrender.com",
+    baseURL: "https://course-system-6zug.onrender.com/mycourse", // Backend URL'ini to'g'ri ko'rsating
     withCredentials: true, // Cookie va tokenlar uchun muhim
 });
 
@@ -32,7 +32,7 @@ api.interceptors.response.use(
             try {
                 // DIQQAT: Bu yerda localhost emas, Render URL'ni ishlating
                 const res = await axios.post(
-                    'https://course-system-6zug.onrender.com/api/token/refresh/', // Backenddagi to'g'ri URL
+                    'https://course-system-6zug.onrender.com/mycourse/token/refresh/', // Backenddagi to'g'ri URL
                     { refresh: refreshToken }
                 );
 
