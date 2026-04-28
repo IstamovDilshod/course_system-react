@@ -4,7 +4,6 @@ import { jwtDecode } from 'jwt-decode';
 import api from './api';
 import './CourseDetail.css';
 
-/* ─── Star Rating ────────────────────────────────────────── */
 const StarRating = ({ value, onChange }) => {
     const [hovered, setHovered] = useState(0);
     return (
@@ -23,7 +22,6 @@ const StarRating = ({ value, onChange }) => {
     );
 };
 
-/* ─── Helper ─────────────────────────────────────────────── */
 const toArray = (data) => {
     if (!data) return [];
     if (Array.isArray(data)) return data;
@@ -31,287 +29,178 @@ const toArray = (data) => {
     return [];
 };
 
-const isUrl = (str = '') => {
-    try { new URL(str); return true; } catch { return false; }
-};
+// ── Payment Modal ─────────────────────────────────────────────────────────────
+const PaymentModal = ({ course, onClose, onSuccess }) => {
+    const [step, setStep] = useState(1); // 1=info, 2=card, 3=success
+    const [cardData, setCardData] = useState({ number: '', expiry: '', cvv: '', name: '' });
+    const [paying, setPaying] = useState(false);
+    const [error, setError] = useState('');
 
-/* ─── Lesson Viewer Modal ────────────────────────────────── */
-const LessonViewer = ({ lesson, onClose, lessonIndex, total }) => {
-    useEffect(() => {
-        const onKey = (e) => { if (e.key === 'Escape') onClose(); };
-        document.addEventListener('keydown', onKey);
-        document.body.style.overflow = 'hidden';
-        return () => {
-            document.removeEventListener('keydown', onKey);
-            document.body.style.overflow = '';
-        };
-    }, [onClose]);
+    const formatCard = (val) => {
+        return val.replace(/\D/g, '').slice(0, 16).replace(/(.{4})/g, '$1 ').trim();
+    };
 
-    const videoUrl = lesson.video?.file || lesson.video || null;
-    const hasVideo = !!videoUrl;
-    const hasLink = !hasVideo && isUrl(lesson.content);
+    const formatExpiry = (val) => {
+        const clean = val.replace(/\D/g, '').slice(0, 4);
+        if (clean.length >= 2) return clean.slice(0, 2) + '/' + clean.slice(2);
+        return clean;
+    };
+
+    const handlePay = async () => {
+        if (!cardData.number || !cardData.expiry || !cardData.cvv || !cardData.name) {
+            setError("Barcha maydonlarni to'ldiring!");
+            return;
+        }
+        setPaying(true);
+        setError('');
+        try {
+            // Real payment API ga ulash mumkin (Payme, Click, Stripe)
+            // Hozir simulate qilamiz
+            await new Promise(r => setTimeout(r, 1800));
+            await api.post('enroll/', { course: course.id });
+            setStep(3);
+            setTimeout(() => { onSuccess(); onClose(); }, 2000);
+        } catch (err) {
+            setError(err.response?.data?.detail || "To'lovda xatolik yuz berdi!");
+        } finally {
+            setPaying(false);
+        }
+    };
 
     return (
-        <>
-            <style>{`
-                @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+        <div className="pm-overlay" onClick={onClose}>
+            <div className="pm-modal" onClick={e => e.stopPropagation()}>
 
-                .lv-overlay {
-                    position: fixed; inset: 0; z-index: 1000;
-                    background: rgba(5, 6, 10, 0.92);
-                    backdrop-filter: blur(10px);
-                    display: flex; align-items: center; justify-content: center;
-                    padding: 20px;
-                    animation: lv-fade .25s ease both;
-                    font-family: 'Sora', sans-serif;
-                }
-                @keyframes lv-fade { from{opacity:0} to{opacity:1} }
-
-                .lv-modal {
-                    background: #111318;
-                    border: 1px solid #1e2130;
-                    border-radius: 22px;
-                    width: 100%;
-                    max-width: 820px;
-                    max-height: 90vh;
-                    overflow: hidden;
-                    display: flex;
-                    flex-direction: column;
-                    box-shadow: 0 40px 100px rgba(0,0,0,.7), 0 0 0 1px #1a1d28;
-                    animation: lv-up .35s cubic-bezier(.22,1,.36,1) both;
-                }
-                @keyframes lv-up { from{opacity:0;transform:translateY(24px) scale(.97)} to{opacity:1;transform:none} }
-
-                /* Top bar */
-                .lv-topbar {
-                    display: flex; align-items: center; gap: 12px;
-                    padding: 16px 20px;
-                    border-bottom: 1px solid #1e2130;
-                    background: #0e1016;
-                    flex-shrink: 0;
-                }
-
-                .lv-order {
-                    font-family: 'JetBrains Mono', monospace;
-                    font-size: 11px; font-weight: 500;
-                    color: #6366f1;
-                    background: rgba(99,102,241,.12);
-                    border: 1px solid rgba(99,102,241,.25);
-                    padding: 3px 10px;
-                    border-radius: 20px;
-                    flex-shrink: 0;
-                }
-
-                .lv-topbar-title {
-                    flex: 1; min-width: 0;
-                    font-size: 14px; font-weight: 600;
-                    color: #e2e4f0;
-                    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-                }
-
-                .lv-counter {
-                    font-family: 'JetBrains Mono', monospace;
-                    font-size: 11px; color: #454869;
-                    flex-shrink: 0;
-                }
-
-                .lv-close {
-                    width: 32px; height: 32px;
-                    border-radius: 8px;
-                    border: 1px solid #1e2130;
-                    background: #161820;
-                    color: #454869;
-                    font-size: 16px;
-                    cursor: pointer;
-                    display: flex; align-items: center; justify-content: center;
-                    transition: all .2s;
-                    flex-shrink: 0;
-                    line-height: 1;
-                }
-                .lv-close:hover { border-color: #e05c6a; color: #e05c6a; background: rgba(224,92,106,.08); }
-
-                /* Scrollable body */
-                .lv-body {
-                    overflow-y: auto;
-                    flex: 1;
-                    scrollbar-width: thin;
-                    scrollbar-color: #282b3a transparent;
-                }
-
-                /* Video */
-                .lv-video-wrap {
-                    background: #000;
-                    position: relative;
-                    width: 100%;
-                    aspect-ratio: 16/9;
-                }
-                .lv-video-wrap video {
-                    width: 100%; height: 100%;
-                    object-fit: contain;
-                    display: block;
-                }
-                .lv-no-video {
-                    aspect-ratio: 16/9;
-                    display: flex; flex-direction: column;
-                    align-items: center; justify-content: center; gap: 10px;
-                    background: radial-gradient(ellipse at center, #161820, #0b0d12);
-                    color: #282b3a;
-                }
-                .lv-no-video span { font-size: 44px; }
-                .lv-no-video p { font-size: 12px; font-family: 'JetBrains Mono', monospace; }
-
-                /* Content */
-                .lv-content {
-                    padding: 24px 28px 28px;
-                    display: flex; flex-direction: column; gap: 18px;
-                }
-
-                .lv-section-label {
-                    font-size: 10px; font-weight: 700;
-                    text-transform: uppercase; letter-spacing: .1em;
-                    color: #454869; margin-bottom: 8px;
-                }
-
-                .lv-text {
-                    font-size: 14px; line-height: 1.75;
-                    color: #9094b0;
-                }
-
-                .lv-link-btn {
-                    display: inline-flex; align-items: center; gap: 8px;
-                    padding: 11px 18px;
-                    border-radius: 10px;
-                    border: 1px solid #1e2130;
-                    background: #161820;
-                    color: #6366f1;
-                    font-size: 13px; font-weight: 500;
-                    text-decoration: none;
-                    transition: all .2s;
-                    max-width: 100%;
-                    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-                }
-                .lv-link-btn:hover { border-color: #6366f1; background: rgba(99,102,241,.08); }
-
-                .lv-divider { height: 1px; background: #1e2130; }
-
-                /* Video meta chips */
-                .lv-chips {
-                    display: flex; flex-wrap: wrap; gap: 8px;
-                }
-                .lv-chip {
-                    display: flex; align-items: center; gap: 6px;
-                    padding: 6px 12px;
-                    border-radius: 20px;
-                    border: 1px solid #1e2130;
-                    background: #0e1016;
-                    font-size: 11px;
-                    font-family: 'JetBrains Mono', monospace;
-                    color: #454869;
-                }
-                .lv-chip span { font-size: 13px; }
-
-                @media (max-width: 600px) {
-                    .lv-modal { border-radius: 16px; }
-                    .lv-content { padding: 18px 16px 20px; }
-                }
-            `}</style>
-
-            <div className="lv-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
-                <div className="lv-modal">
-                    {/* Top bar */}
-                    <div className="lv-topbar">
-                        <span className="lv-order">
-                            {String(lessonIndex + 1).padStart(2, '0')}
-                        </span>
-                        <span className="lv-topbar-title">{lesson.title}</span>
-                        <span className="lv-counter">{lessonIndex + 1} / {total}</span>
-                        <button className="lv-close" onClick={onClose}>✕</button>
-                    </div>
-
-                    {/* Scrollable */}
-                    <div className="lv-body">
-                        {/* Video */}
-                        {hasVideo ? (
-                            <div className="lv-video-wrap">
-                                <video controls autoPlay key={videoUrl}>
-                                    <source src={videoUrl} />
-                                    Brauzeringiz video formatini qo'llab-quvvatlamaydi.
-                                </video>
-                            </div>
-                        ) : (
-                            <div className="lv-no-video">
-                                <span>🎬</span>
-                                <p>video mavjud emas</p>
-                            </div>
-                        )}
-
-                        {/* Content */}
-                        <div className="lv-content">
-                            {/* Meta chips */}
-                            <div className="lv-chips">
-                                {lesson.created_at && (
-                                    <div className="lv-chip">
-                                        <span>📅</span>
-                                        {new Date(lesson.created_at).toLocaleDateString('uz-UZ', {
-                                            day: '2-digit', month: 'short', year: 'numeric'
-                                        })}
-                                    </div>
-                                )}
-                                {lesson.video?.duration > 0 && (
-                                    <div className="lv-chip">
-                                        <span>⏱</span>
-                                        {(() => {
-                                            const s = lesson.video.duration;
-                                            const m = Math.floor(s / 60);
-                                            return `${String(m).padStart(2,'0')}:${String(s % 60).padStart(2,'0')}`;
-                                        })()}
-                                    </div>
-                                )}
-                                {lesson.video?.size > 0 && (
-                                    <div className="lv-chip">
-                                        <span>💾</span>
-                                        {(lesson.video.size / (1024 * 1024)).toFixed(1)} MB
-                                    </div>
-                                )}
-                                {lesson.order !== undefined && (
-                                    <div className="lv-chip">
-                                        <span>📌</span>
-                                        Tartib: {lesson.order}
-                                    </div>
-                                )}
-                            </div>
-
-                            <div className="lv-divider" />
-
-                            {/* Text / link */}
+                {/* Step 1: Info */}
+                {step === 1 && (
+                    <>
+                        <div className="pm-header">
+                            <h2 className="pm-title">Kursni sotib olish</h2>
+                            <button className="pm-close" onClick={onClose}>✕</button>
+                        </div>
+                        <div className="pm-course-info">
+                            <div className="pm-course-icon">📚</div>
                             <div>
-                                <p className="lv-section-label">Dars matni</p>
-                                {hasLink ? (
-                                    <a
-                                        href={lesson.content}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="lv-link-btn"
-                                    >
-                                        🔗 {lesson.content}
-                                    </a>
-                                ) : (
-                                    <p className="lv-text">
-                                        {lesson.content || <span style={{ color: '#282b3a' }}>Matn qo'shilmagan</span>}
-                                    </p>
-                                )}
+                                <p className="pm-course-name">{course.title}</p>
+                                <p className="pm-course-inst">👨‍🏫 {course.instructor_name}</p>
                             </div>
                         </div>
+                        <div className="pm-price-row">
+                            <span>Narxi:</span>
+                            <span className="pm-price">${course.price}</span>
+                        </div>
+                        <div className="pm-methods">
+                            <p className="pm-methods-label">To'lov usuli</p>
+                            <div className="pm-method-cards">
+                                <div className="pm-method pm-method--active">
+                                    💳 Bank kartasi
+                                </div>
+                            </div>
+                        </div>
+                        <button className="pm-btn pm-btn--primary" onClick={() => setStep(2)}>
+                            Davom etish →
+                        </button>
+                    </>
+                )}
+
+                {/* Step 2: Card */}
+                {step === 2 && (
+                    <>
+                        <div className="pm-header">
+                            <button className="pm-back-btn" onClick={() => setStep(1)}>← Orqaga</button>
+                            <h2 className="pm-title">Karta ma'lumotlari</h2>
+                            <button className="pm-close" onClick={onClose}>✕</button>
+                        </div>
+
+                        {/* Card preview */}
+                        <div className="pm-card-preview">
+                            <div className="pm-card-chip">💳</div>
+                            <div className="pm-card-number-display">
+                                {cardData.number || '•••• •••• •••• ••••'}
+                            </div>
+                            <div className="pm-card-bottom">
+                                <div>
+                                    <p className="pm-card-label">Karta egasi</p>
+                                    <p className="pm-card-value">{cardData.name || 'ISM FAMILIYA'}</p>
+                                </div>
+                                <div>
+                                    <p className="pm-card-label">Muddati</p>
+                                    <p className="pm-card-value">{cardData.expiry || 'MM/YY'}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="pm-form">
+                            <div className="pm-field">
+                                <label>Karta raqami</label>
+                                <input
+                                    type="text"
+                                    placeholder="0000 0000 0000 0000"
+                                    value={cardData.number}
+                                    onChange={e => setCardData(p => ({ ...p, number: formatCard(e.target.value) }))}
+                                    maxLength={19}
+                                />
+                            </div>
+                            <div className="pm-field">
+                                <label>Karta egasi</label>
+                                <input
+                                    type="text"
+                                    placeholder="Ism Familiya"
+                                    value={cardData.name}
+                                    onChange={e => setCardData(p => ({ ...p, name: e.target.value.toUpperCase() }))}
+                                />
+                            </div>
+                            <div className="pm-field-row">
+                                <div className="pm-field">
+                                    <label>Muddati</label>
+                                    <input
+                                        type="text"
+                                        placeholder="MM/YY"
+                                        value={cardData.expiry}
+                                        onChange={e => setCardData(p => ({ ...p, expiry: formatExpiry(e.target.value) }))}
+                                        maxLength={5}
+                                    />
+                                </div>
+                                <div className="pm-field">
+                                    <label>CVV</label>
+                                    <input
+                                        type="password"
+                                        placeholder="•••"
+                                        value={cardData.cvv}
+                                        onChange={e => setCardData(p => ({ ...p, cvv: e.target.value.replace(/\D/g, '').slice(0, 3) }))}
+                                        maxLength={3}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        {error && <p className="pm-error">{error}</p>}
+
+                        <button className="pm-btn pm-btn--primary" onClick={handlePay} disabled={paying}>
+                            {paying ? (
+                                <><span className="pm-spinner" /> To'lanmoqda...</>
+                            ) : (
+                                `💳 $${course.price} to'lash`
+                            )}
+                        </button>
+                        <p className="pm-secure">🔒 Xavfsiz to'lov</p>
+                    </>
+                )}
+
+                {/* Step 3: Success */}
+                {step === 3 && (
+                    <div className="pm-success">
+                        <div className="pm-success-icon">✅</div>
+                        <h2>To'lov muvaffaqiyatli!</h2>
+                        <p>Siz kursga muvaffaqiyatli yozildingiz.</p>
                     </div>
-                </div>
+                )}
             </div>
-        </>
+        </div>
     );
 };
 
-/* ═══════════════════════════════════════════════════════════ */
-/*  CourseDetail                                               */
-/* ═══════════════════════════════════════════════════════════ */
+// ── Main Component ────────────────────────────────────────────────────────────
 const CourseDetail = () => {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -322,21 +211,20 @@ const CourseDetail = () => {
     const [loading, setLoading] = useState(true);
     const [enrolled, setEnrolled] = useState(false);
     const [enrolling, setEnrolling] = useState(false);
+    const [showPayment, setShowPayment] = useState(false);
     const [activeTab, setActiveTab] = useState('lessons');
 
+    // Lesson form
     const [lessonForm, setLessonForm] = useState({ title: '', content: '', order: 0 });
+    const [videoFile, setVideoFile] = useState(null);
+    const [videoPreview, setVideoPreview] = useState('');
     const [lessonLoading, setLessonLoading] = useState(false);
+    const [uploadProgress, setUploadProgress] = useState(0);
     const [showLessonForm, setShowLessonForm] = useState(false);
 
+    // Review form
     const [reviewForm, setReviewForm] = useState({ rating: 0, comment: '' });
     const [reviewLoading, setReviewLoading] = useState(false);
-
-    const [editingLesson, setEditingLesson] = useState(null);
-    const [editForm, setEditForm] = useState({ title: '', content: '', video: null });
-    const [videoPreview, setVideoPreview] = useState(null);
-
-    // ← NEW: which lesson is open in the viewer
-    const [viewingLesson, setViewingLesson] = useState(null);
 
     const token = localStorage.getItem('access');
     const user = token ? jwtDecode(token) : null;
@@ -363,31 +251,45 @@ const CourseDetail = () => {
                     const data = toArray(res.data);
                     setEnrolled(data.some(e => String(e.course) === String(id)));
                 })
-                .catch(() => { });
+                .catch(() => {});
         }
     }, [id]);
 
-    const handleEnroll = async () => {
-        if (!token) return navigate('/login');
-        setEnrolling(true);
-        try {
-            await api.post('enroll/', { course: id });
-            setEnrolled(true);
-        } catch (err) {
-            alert(err.response?.data?.detail || 'Xatolik yuz berdi!');
-        } finally {
-            setEnrolling(false);
+    // Video fayl tanlash
+    const handleVideoChange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        if (file.size > 500 * 1024 * 1024) {
+            alert("Video 500MB dan kichik bo'lishi kerak!");
+            return;
         }
+        setVideoFile(file);
+        setVideoPreview(URL.createObjectURL(file));
     };
 
     const handleAddLesson = async (e) => {
         e.preventDefault();
         setLessonLoading(true);
+        setUploadProgress(0);
         try {
-            const res = await api.post(`courses/${id}/lessons/`, lessonForm);
+            const formData = new FormData();
+            formData.append('title', lessonForm.title);
+            formData.append('content', lessonForm.content);
+            formData.append('order', lessonForm.order);
+            if (videoFile) formData.append('video_file', videoFile);
+
+            const res = await api.post(`courses/${id}/lessons/`, formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+                onUploadProgress: (e) => {
+                    setUploadProgress(Math.round((e.loaded * 100) / e.total));
+                }
+            });
             setLessons(prev => [...prev, res.data]);
             setLessonForm({ title: '', content: '', order: 0 });
+            setVideoFile(null);
+            setVideoPreview('');
             setShowLessonForm(false);
+            setUploadProgress(0);
         } catch (err) {
             alert(err.response?.data?.detail || "Dars qo'shishda xatolik!");
         } finally {
@@ -407,7 +309,7 @@ const CourseDetail = () => {
 
     const handleAddReview = async (e) => {
         e.preventDefault();
-        if (!reviewForm.rating) return alert('Iltimos, baho bering!');
+        if (!reviewForm.rating) return alert("Iltimos, baho bering!");
         setReviewLoading(true);
         try {
             const res = await api.post(`courses/${id}/reviews/`, reviewForm);
@@ -430,68 +332,29 @@ const CourseDetail = () => {
         }
     };
 
-    const handleEditClick = (lesson) => {
-        setEditingLesson(lesson);
-        setEditForm({ title: lesson.title || '', content: lesson.content || '', video: null });
-        setVideoPreview(lesson.video?.file || lesson.video || null);
-    };
-
-    const handleUpdateLesson = async () => {
-        try {
-            const formData = new FormData();
-            formData.append('title', editForm.title);
-            formData.append('content', editForm.content);
-            if (editForm.video) formData.append('video', editForm.video);
-            const res = await api.put(
-                `courses/${id}/lessons/${editingLesson.id}/`,
-                formData,
-                { headers: { 'Content-Type': 'multipart/form-data' } }
-            );
-            setLessons(prev => prev.map(l => l.id === editingLesson.id ? res.data : l));
-            setEditingLesson(null);
-            alert('Yangilandi ✅');
-        } catch (error) {
-            console.error(error);
-            alert('Xatolik ❌');
-        }
-    };
-
-    const handleVideoChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            setEditForm(prev => ({ ...prev, video: file }));
-            setVideoPreview(URL.createObjectURL(file));
-        }
-    };
-
     const avgRating = reviews.length
         ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1)
         : null;
 
-    // Can a student open the viewer?
-    const canWatch = enrolled || isOwner;
-
-    // Lesson click handler
-    const handleLessonClick = (lesson) => {
-        if (canWatch) setViewingLesson(lesson);
-    };
-
     if (loading) return (
-        <div className="cd-loading-screen">
-            <div className="cd-spinner-lg" />
-        </div>
+        <div className="cd-loading-screen"><div className="cd-spinner-lg" /></div>
     );
 
     if (!course) return (
-        <div className="cd-loading-screen">
-            <p style={{ color: '#64748b' }}>Kurs topilmadi.</p>
-        </div>
+        <div className="cd-loading-screen"><p style={{ color: '#64748b' }}>Kurs topilmadi.</p></div>
     );
 
     return (
         <div className="cd-wrapper">
-            <div className="cd-container">
+            {showPayment && (
+                <PaymentModal
+                    course={course}
+                    onClose={() => setShowPayment(false)}
+                    onSuccess={() => setEnrolled(true)}
+                />
+            )}
 
+            <div className="cd-container">
                 {/* ── Hero ── */}
                 <div className="cd-hero">
                     <button className="cd-back" onClick={() => navigate('/courses')}>← Orqaga</button>
@@ -512,16 +375,21 @@ const CourseDetail = () => {
                                 <p className="cd-price-label">Narxi</p>
                                 <p className="cd-price">${course.price}</p>
 
+                                {/* Student uchun */}
                                 {!isInstructor && (
                                     enrolled ? (
                                         <div className="cd-enrolled-badge">✅ Yozilgansiz</div>
                                     ) : (
-                                        <button className="cd-enroll-btn" onClick={handleEnroll} disabled={enrolling}>
-                                            {enrolling ? 'Yuklanmoqda...' : 'Kursga yozilish'}
+                                        <button
+                                            className="cd-enroll-btn"
+                                            onClick={() => token ? setShowPayment(true) : navigate('/login')}
+                                        >
+                                            🛒 Sotib olish
                                         </button>
                                     )
                                 )}
 
+                                {/* Instructor uchun */}
                                 {isOwner && (
                                     <button className="cd-add-lesson-btn" onClick={() => setShowLessonForm(o => !o)}>
                                         {showLessonForm ? '✕ Yopish' : "+ Dars qo'shish"}
@@ -558,20 +426,59 @@ const CourseDetail = () => {
                                     />
                                 </div>
                             </div>
+
                             <div className="cd-field">
                                 <label>Kontent (matn yoki video link)</label>
                                 <textarea
                                     value={lessonForm.content}
                                     onChange={e => setLessonForm(p => ({ ...p, content: e.target.value }))}
                                     placeholder="Dars mazmuni yoki YouTube link..."
-                                    rows={4}
+                                    rows={3}
                                     required
                                 />
                             </div>
+
+                            {/* ✅ Video upload */}
+                            <div className="cd-field">
+                                <label>Video fayl (ixtiyoriy, max 500MB)</label>
+                                <div className="cd-upload-area" onClick={() => document.getElementById('video-input').click()}>
+                                    {videoPreview ? (
+                                        <video src={videoPreview} className="cd-video-preview" controls onClick={e => e.stopPropagation()} />
+                                    ) : (
+                                        <div className="cd-upload-placeholder">
+                                            <span className="cd-upload-icon">🎬</span>
+                                            <p>Video yuklash uchun bosing</p>
+                                            <p className="cd-upload-hint">MP4, WebM, MOV — max 500MB</p>
+                                        </div>
+                                    )}
+                                    <input
+                                        id="video-input"
+                                        type="file"
+                                        accept="video/*"
+                                        style={{ display: 'none' }}
+                                        onChange={handleVideoChange}
+                                    />
+                                </div>
+                                {videoFile && (
+                                    <div className="cd-file-info">
+                                        🎬 {videoFile.name} — {(videoFile.size / 1024 / 1024).toFixed(1)} MB
+                                        <button type="button" onClick={() => { setVideoFile(null); setVideoPreview(''); }}>✕</button>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Upload progress */}
+                            {lessonLoading && uploadProgress > 0 && (
+                                <div className="cd-progress">
+                                    <div className="cd-progress-bar" style={{ width: `${uploadProgress}%` }} />
+                                    <span>{uploadProgress}%</span>
+                                </div>
+                            )}
+
                             <div className="cd-form-actions">
                                 <button type="button" className="cd-btn cd-btn--ghost" onClick={() => setShowLessonForm(false)}>Bekor</button>
                                 <button type="submit" className="cd-btn cd-btn--primary" disabled={lessonLoading}>
-                                    {lessonLoading ? 'Saqlanmoqda...' : "+ Dars qo'shish"}
+                                    {lessonLoading ? `Yuklanmoqda ${uploadProgress}%...` : "+ Dars qo'shish"}
                                 </button>
                             </div>
                         </form>
@@ -596,62 +503,29 @@ const CourseDetail = () => {
                         ) : (
                             <div className="cd-lesson-list">
                                 {lessons.map((lesson, i) => (
-                                    <div
-                                        key={lesson.id}
-                                        className={`cd-lesson-item${canWatch ? ' cd-lesson-item--clickable' : ''}`}
-                                        onClick={() => handleLessonClick(lesson)}
-                                        title={canWatch ? 'Darsni ochish' : 'Kursga yoziling'}
-                                    >
+                                    <div key={lesson.id} className="cd-lesson-item">
                                         <div className="cd-lesson-left">
                                             <span className="cd-lesson-num">{String(i + 1).padStart(2, '0')}</span>
-                                            <div>
+                                            <div className="cd-lesson-info">
                                                 <p className="cd-lesson-title">{lesson.title}</p>
                                                 <p className="cd-lesson-content">{lesson.content}</p>
+                                                {/* Video player */}
+                                                {lesson.video_file && (
+                                                    <video
+                                                        className="cd-lesson-video"
+                                                        src={lesson.video_file}
+                                                        controls
+                                                        preload="metadata"
+                                                    />
+                                                )}
                                             </div>
                                         </div>
-
-                                        {/* play icon for enrolled */}
-                                        {canWatch && !isOwner && (
-                                            <span className="cd-play-icon">▶</span>
-                                        )}
-
-                                        {/* owner actions — stop propagation so click doesn't open viewer */}
                                         {isOwner && (
-                                            <>
-                                                <button
-                                                    className="cd-edit-btn"
-                                                    onClick={e => { e.stopPropagation(); navigate(`/courses/${id}/lessons/${lesson.id}/edit`); }}
-                                                >
-                                                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#6d6fe7">
-                                                        <path d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z" />
-                                                    </svg>
-                                                </button>
-                                                <button
-                                                    className="cd-del-btn"
-                                                    onClick={e => { e.stopPropagation(); handleDeleteLesson(lesson.id); }}
-                                                >
-                                                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#EA3323">
-                                                        <path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z" />
-                                                    </svg>
-                                                </button>
-                                                {/* owner can also preview */}
-                                                <button
-                                                    className="cd-play-icon cd-play-icon--btn"
-                                                    onClick={e => { e.stopPropagation(); setViewingLesson(lesson); }}
-                                                    title="Ko'rish"
-                                                >▶</button>
-                                            </>
+                                            <button className="cd-del-btn" onClick={() => handleDeleteLesson(lesson.id)}>🗑</button>
                                         )}
                                     </div>
                                 ))}
                             </div>
-                        )}
-
-                        {/* hint for non-enrolled students */}
-                        {!canWatch && lessons.length > 0 && (
-                            <p style={{ textAlign: 'center', marginTop: 16, fontSize: 13, color: '#454869' }}>
-                                🔒 Darslarni ko'rish uchun kursga yoziling
-                            </p>
                         )}
                     </div>
                 )}
@@ -674,7 +548,6 @@ const CourseDetail = () => {
                                 </button>
                             </form>
                         )}
-
                         {reviews.length === 0 ? (
                             <div className="cd-empty"><span>⭐</span><p>Hali baholar yo'q</p></div>
                         ) : (
@@ -699,16 +572,6 @@ const CourseDetail = () => {
                     </div>
                 )}
             </div>
-
-            {/* ── Lesson Viewer ── */}
-            {viewingLesson && (
-                <LessonViewer
-                    lesson={viewingLesson}
-                    lessonIndex={lessons.findIndex(l => l.id === viewingLesson.id)}
-                    total={lessons.length}
-                    onClose={() => setViewingLesson(null)}
-                />
-            )}
         </div>
     );
 };

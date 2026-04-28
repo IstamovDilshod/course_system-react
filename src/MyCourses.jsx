@@ -3,6 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import api from './api';
 import './MyCourses.css';
 
+// ✅ Har qanday formatdan array olish
+const toArray = (data) => {
+    if (!data) return [];
+    if (Array.isArray(data)) return data;
+    if (Array.isArray(data.results)) return data.results;
+    return [];
+};
+
 const MyCourses = () => {
     const [enrollments, setEnrollments] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -10,12 +18,16 @@ const MyCourses = () => {
 
     useEffect(() => {
         api.get('my-courses/')
-            .then(res => setEnrollments(res.data))
-            .catch(err => console.error(err))
+            .then(res => {
+                console.log('my-courses response:', res.data); // debug
+                setEnrollments(toArray(res.data));
+            })
+            .catch(err => console.error('my-courses error:', err))
             .finally(() => setLoading(false));
     }, []);
 
     const formatDate = (str) => {
+        if (!str) return '';
         return new Date(str).toLocaleDateString('uz-UZ', {
             year: 'numeric', month: 'long', day: 'numeric'
         });
@@ -25,7 +37,6 @@ const MyCourses = () => {
         <div className="mc-wrapper">
             <div className="mc-container">
 
-                {/* Header */}
                 <div className="mc-header">
                     <button className="mc-back" onClick={() => navigate('/courses')}>← Orqaga</button>
                     <div>
@@ -34,7 +45,6 @@ const MyCourses = () => {
                     </div>
                 </div>
 
-                {/* Loading */}
                 {loading && (
                     <div className="mc-grid">
                         {[1, 2, 3].map(i => (
@@ -47,7 +57,6 @@ const MyCourses = () => {
                     </div>
                 )}
 
-                {/* Empty */}
                 {!loading && enrollments.length === 0 && (
                     <div className="mc-empty">
                         <span className="mc-empty-icon">🎓</span>
@@ -59,7 +68,6 @@ const MyCourses = () => {
                     </div>
                 )}
 
-                {/* Grid */}
                 {!loading && enrollments.length > 0 && (
                     <>
                         <p className="mc-count">{enrollments.length} ta kursga yozilgansiz</p>
@@ -85,10 +93,7 @@ const MyCourses = () => {
                                         <span className="mc-enrolled-badge">✅ Yozilgansiz</span>
                                         <button
                                             className="mc-btn mc-btn--ghost"
-                                            onClick={e => {
-                                                e.stopPropagation();
-                                                navigate(`/courses/${enrollment.course}`);
-                                            }}
+                                            onClick={e => { e.stopPropagation(); navigate(`/courses/${enrollment.course}`); }}
                                         >
                                             Kursni ochish →
                                         </button>
