@@ -38,17 +38,21 @@ const PaymentModal = ({ course, onClose, onSuccess }) => {
     const formatExpiry = v => { const c = v.replace(/\D/g, '').slice(0, 4); return c.length >= 2 ? c.slice(0,2) + '/' + c.slice(2) : c; };
 
     const handlePay = async () => {
-        if (!cardData.number || !cardData.expiry || !cardData.cvv || !cardData.name) {
-            setError("Barcha maydonlarni to'ldiring!"); return;
-        }
+        // TEST MODE — karta tekshirilmaydi, to'lov simulatsiya
         setPaying(true); setError('');
         try {
-            await new Promise(r => setTimeout(r, 1800));
+            await new Promise(r => setTimeout(r, 1500));
             await api.post('enroll/', { course: course.id });
             setStep(3);
             setTimeout(() => { onSuccess(); onClose(); }, 2000);
         } catch (err) {
-            setError(err.response?.data?.detail || "To'lovda xatolik!");
+            // Allaqachon yozilgan bo'lsa ham muvaffaqiyat ko'rsat
+            if (err.response?.status === 400) {
+                setStep(3);
+                setTimeout(() => { onSuccess(); onClose(); }, 2000);
+            } else {
+                setError(err.response?.data?.detail || "To'lovda xatolik!");
+            }
         } finally { setPaying(false); }
     };
 
